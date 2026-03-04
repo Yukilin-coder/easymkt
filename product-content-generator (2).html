@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一键生成全套营销内容</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1a1410;--paper:#faf8f3;--warm:#f5f0e8;--accent:#c84b2f;--gold:#c9973a;--muted:#8a7968;--border:#ddd5c4;--card:#fffefb;--shadow:0 2px 16px rgba(26,20,16,.08);--r:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+nav{background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;border-bottom:3px solid var(--accent);position:sticky;top:0;z-index:100}
+.logo{font-family:'Noto Serif SC',serif;font-size:18px;color:#faf8f3;font-weight:700}
+.nav-links{display:flex;gap:4px}
+.nb{padding:8px 18px;border-radius:24px;border:none;background:transparent;color:#bbb0a0;font-family:'Noto Sans SC',sans-serif;font-size:13px;cursor:pointer;transition:.2s}
+.nb:hover{color:#faf8f3}
+.nb.active{background:var(--accent);color:#fff;font-weight:600}
+.page{display:none;max-width:980px;margin:0 auto;padding:36px 24px 80px}
+.page.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:20px}
+.ct{font-family:'Noto Serif SC',serif;font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ct::before{content:'';display:inline-block;width:4px;height:18px;background:var(--accent);border-radius:2px}
+.fl{font-size:13px;font-weight:500;color:var(--ink);display:block;margin-bottom:6px;margin-top:16px}
+.fl:first-child{margin-top:0}
+textarea,input[type=text],input[type=url]{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Noto Sans SC',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);outline:none;transition:.2s}
+textarea:focus,input[type=text]:focus,input[type=url]:focus{border-color:var(--accent)}
+textarea{resize:vertical;line-height:1.8}
+.cg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;color:var(--muted);cursor:pointer;transition:.2s;user-select:none}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:600}
+.upz{border:2px dashed var(--border);border-radius:10px;padding:22px;text-align:center;cursor:pointer;transition:.2s;background:var(--warm)}
+.upz:hover{border-color:var(--accent);background:#fff5f2}
+.upz input{display:none}
+.upz p{font-size:12px;color:var(--muted);margin-top:4px}
+.fl-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ftag{display:flex;align-items:center;gap:6px;padding:5px 12px;background:#fff;border:1px solid var(--border);border-radius:16px;font-size:12px}
+.ftag .rm{cursor:pointer;color:var(--muted);font-size:14px}
+.ftag .rm:hover{color:var(--accent)}
+.btn{padding:10px 22px;border-radius:8px;border:none;font-family:'Noto Sans SC',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.bp{background:var(--accent);color:#fff}
+.bp:hover:not(:disabled){background:#b03d23;box-shadow:0 4px 16px rgba(200,75,47,.3)}
+.bs{background:var(--warm);color:var(--ink);border:1.5px solid var(--border)}
+.bs:hover{border-color:var(--accent);color:var(--accent)}
+.bfull{width:100%;justify-content:center;padding:16px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.abox{background:var(--warm);border-radius:10px;padding:18px;margin-top:16px;font-size:13px;line-height:1.9;white-space:pre-wrap;word-break:break-word;display:none;border:1px solid var(--border)}
+.abox.show{display:block}
+hr.dv{border:none;border-top:1px solid var(--border);margin:22px 0}
+.rtb{padding:6px 16px;border-radius:16px;border:1.5px solid var(--border);font-size:12px;color:var(--muted);cursor:pointer;transition:.2s;background:var(--paper);font-family:'Noto Sans SC',sans-serif}
+.rtb.on{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:600}
+.utags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.utag{display:flex;align-items:center;gap:6px;padding:5px 12px;background:#fff;border:1px solid var(--border);border-radius:16px;font-size:12px;max-width:280px}
+.utag span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.utag .rm{cursor:pointer;color:var(--muted);font-size:14px;flex-shrink:0}
+.utag .rm:hover{color:var(--accent)}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:22px;overflow-x:auto}
+.tab{padding:11px 20px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:.2s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.panel{display:none}.panel.active{display:block}
+.oc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.oh{background:var(--warm);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.ot{font-size:13px;font-weight:600}
+.ob{padding:20px;font-size:13px;line-height:2;white-space:pre-wrap;word-break:break-word}
+.cpb{padding:4px 12px;border:1.5px solid var(--border);border-radius:14px;background:#fff;color:var(--muted);font-size:11px;cursor:pointer;transition:.2s;font-family:'Noto Sans SC',sans-serif}
+.cpb:hover{border-color:var(--accent);color:var(--accent)}
+.cpb.ok{background:#e8f5e9;border-color:#4caf50;color:#388e3c}
+.loader{text-align:center;padding:48px 20px;display:none}
+.loader.show{display:block}
+.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.htop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.hname{font-weight:600;font-size:15px}
+.hdate{font-size:11px;color:var(--muted)}
+.htags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.htag{padding:3px 10px;border-radius:12px;font-size:11px;background:var(--warm);color:var(--muted);border:1px solid var(--border)}
+.hprev{font-size:12px;color:var(--muted);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stars{display:inline-flex;gap:3px}
+.star{font-size:19px;cursor:pointer;color:#ddd;transition:.15s;line-height:1}
+.star.lit{color:var(--gold)}
+.star:hover{transform:scale(1.2)}
+.hbot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;flex-wrap:wrap;gap:8px}
+.delbtn{font-size:12px;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:6px;transition:.2s}
+.delbtn:hover{color:var(--accent);background:#fff5f2}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.mbg.show{display:flex}
+.modal{background:var(--card);border-radius:var(--r);padding:28px;max-width:700px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.mh h3{font-family:'Noto Serif SC',serif;font-size:18px}
+.mc{font-size:22px;cursor:pointer;color:var(--muted)}
+.mc:hover{color:var(--ink)}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .ico{font-size:38px;margin-bottom:12px}
+.empty p{font-size:14px;line-height:1.8}
+.err{background:#fff5f3;border:1px solid #f5c6bc;border-radius:8px;padding:13px 16px;color:var(--accent);font-size:13px;margin-top:12px;display:none}
+.err.show{display:block}
+.rrow{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rlbl{font-size:11px;color:var(--muted);min-width:72px}
+@media(max-width:600px){nav{padding:0 14px}.page{padding:20px 12px 60px}}
+</style>
+</head>
+<body>
+<nav>
+  <div>
+    <div class="logo">✦ 一键生成全套营销内容</div>
+    <div style="font-size:11px;color:#7a6e62;margin-top:2px;letter-spacing:.02em">输入产品信息，AI 自动生成小红书、朋友圈、QA、详情页、海报等营销内容</div>
+  </div>
+  <div class="nav-links">
+    <button class="nb active" id="navCreate" onclick="goPage('create',this)">创建内容</button>
+    <button class="nb" id="navHistory" onclick="goPage('history',this)">历史记录</button>
+  </div>
+</nav>
+
+<div class="page active" id="page-create">
+  <div class="card">
+    <div class="ct">产品信息</div>
+    <label class="fl" style="margin-top:0">产品名称</label>
+    <input type="text" id="pName" placeholder="例：XX胶原蛋白精华液">
+    <label class="fl">产品描述 <span style="font-size:11px;color:var(--muted)">（可选，上传文件后AI会自动分析）</span></label>
+    <textarea id="pDesc" rows="5" placeholder="产品功能、成分、价格、人群、竞品差异等，越详细越好…"></textarea>
+    <label class="fl">上传产品图片 / 文档</label>
+    <div class="upz" onclick="document.getElementById('pf').click()">
+      <div style="font-size:26px">📎</div>
+      <div style="font-size:14px;font-weight:600;margin-top:4px">点击上传文件</div>
+      <p>支持 JPG / PNG / PDF / TXT，可多文件</p>
+      <input type="file" id="pf" multiple accept="image/*,.pdf,.txt" onchange="hProdFiles(event)">
+    </div>
+    <div class="fl-list" id="pfList"></div>
+    <div style="margin-top:20px;display:flex;gap:10px">
+      <button class="btn bp" onclick="analyzeProduct()">🔍 AI 分析产品</button>
+      <button class="btn bs" onclick="clearProduct()">清空</button>
+    </div>
+    <div class="loader" id="aLdr"><div class="spinner"></div><div style="font-size:13px;color:var(--muted)">AI 正在分析产品…</div></div>
+    <div class="abox" id="aBox"></div>
+    <div class="err" id="aErr"></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">选择生成内容</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="font-size:13px;font-weight:600">生成类型</span>
+      <div class="cg" style="margin-top:0">
+        <div class="chip on" data-type="xhs">📕 小红书获客笔记</div>
+        <div class="chip on" data-type="moments">💬 朋友圈文案</div>
+        <div class="chip on" data-type="qa">❓ 客户咨询QA</div>
+        <div class="chip on" data-type="detail">🛒 产品详情页</div>
+        <div class="chip on" data-type="poster">🎨 促销海报文案</div>
+      </div>
+    </div>
+    <hr class="dv">
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px">🎭 人设与风格设置</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px">修改后自动长期保存</div>
+
+    <label class="fl" style="margin-top:0">人设定位</label>
+    <div class="cg" id="gPersona">
+      <div class="chip" data-v="lifestyle博主">lifestyle博主</div>
+      <div class="chip" data-v="专业达人">专业达人</div>
+      <div class="chip" data-v="素人真实分享">素人真实分享</div>
+      <div class="chip" data-v="KOC种草">KOC种草</div>
+      <div class="chip" data-v="品牌官方">品牌官方</div>
+    </div>
+    <input type="text" id="personaCustom" placeholder="或自定义人设…" style="margin-top:8px" oninput="saveSettings()">
+
+    <label class="fl">语言风格</label>
+    <div class="cg" id="gTone">
+      <div class="chip" data-v="活泼可爱">活泼可爱</div>
+      <div class="chip" data-v="真实亲切">真实亲切</div>
+      <div class="chip" data-v="专业权威">专业权威</div>
+      <div class="chip" data-v="高级简约">高级简约</div>
+      <div class="chip" data-v="幽默有梗">幽默有梗</div>
+    </div>
+    <input type="text" id="toneCustom" placeholder="或自定义语言风格…" style="margin-top:8px" oninput="saveSettings()">
+
+    <label class="fl">偏好设置</label>
+    <div class="cg" id="gPref">
+      <div class="chip" data-v="多用emoji">多用emoji</div>
+      <div class="chip" data-v="带数据/成分">带数据/成分</div>
+      <div class="chip" data-v="场景化叙事">场景化叙事</div>
+      <div class="chip" data-v="故事性开头">故事性开头</div>
+      <div class="chip" data-v="强引导互动">强引导互动</div>
+      <div class="chip" data-v="简短直接">简短直接</div>
+    </div>
+    <input type="text" id="prefCustom" placeholder="或自定义偏好…" style="margin-top:8px" oninput="saveSettings()">
+
+    <label class="fl">禁止设置</label>
+    <div class="cg" id="gBan">
+      <div class="chip" data-v="禁止夸大功效">禁止夸大功效</div>
+      <div class="chip" data-v="禁用医疗词汇">禁用医疗词汇</div>
+      <div class="chip" data-v="禁止贬低竞品">禁止贬低竞品</div>
+      <div class="chip" data-v="禁止价格词汇">禁止价格词汇</div>
+    </div>
+    <input type="text" id="banCustom" placeholder="或自定义禁止项…" style="margin-top:8px" oninput="saveSettings()">
+
+    <label class="fl">参考作品 <span style="font-size:11px;color:var(--muted)">（AI会模仿其风格，长期保存）</span></label>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="rtb on" id="rtXhs" onclick="setRefType('xhs')">📕 小红书参考</button>
+      <button class="rtb" id="rtMom" onclick="setRefType('moments')">💬 朋友圈参考</button>
+      <button class="rtb" id="rtDetail" onclick="setRefType('detail')">🛒 详情页参考</button>
+      <button class="rtb" id="rtPoster" onclick="setRefType('poster')">🎨 海报参考</button>
+    </div>
+    <textarea id="refText" rows="3" placeholder="粘贴参考文案内容…" oninput="saveSettings()"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+      <input type="url" id="refUrl" placeholder="或粘贴参考链接 URL…" style="flex:1">
+      <button class="btn bs" style="padding:8px 12px;font-size:12px;white-space:nowrap" onclick="addRefUrl()">添加链接</button>
+    </div>
+    <div class="utags" id="refUrlTags"></div>
+    <div style="margin-top:8px">
+      <div class="upz" style="padding:14px" onclick="document.getElementById('rff').click()">
+        <div style="font-size:13px;color:var(--muted)">📎 上传参考图片或文档</div>
+        <input type="file" id="rff" multiple accept="image/*,.pdf,.txt" onchange="hRefFiles(event)" style="display:none">
+      </div>
+      <div class="fl-list" id="rfList"></div>
+    </div>
+    <hr class="dv">
+    <button class="btn bp bfull" onclick="generateContent()">✦ 生成内容</button>
+    <div class="err" id="genErr"></div>
+  </div>
+
+  <div id="outputArea" style="display:none">
+    <div class="loader" id="gLdr"><div class="spinner"></div><div style="font-size:13px;color:var(--muted)" id="gLdrTxt">AI 正在创作内容…</div></div>
+    <div id="outputContent" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div style="font-family:'Noto Serif SC',serif;font-size:20px;font-weight:700">✦ 生成结果</div>
+        <button class="btn bp" onclick="saveToHistory()">💾 保存到历史记录</button>
+      </div>
+      <div class="tabs" id="oTabs"></div>
+      <div id="oPanels"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-history">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:8px">
+    <div style="font-family:'Noto Serif SC',serif;font-size:22px;font-weight:700">历史记录</div>
+    <div style="font-size:12px;color:var(--muted)">⭐ 评分高的内容AI写作时会参考</div>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<div class="mbg" id="detailModal">
+  <div class="modal">
+    <div class="mh"><h3 id="modalTitle"></h3><span class="mc" onclick="closeModal()">✕</span></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+var pFiles=[],rFiles=[],rUrls=[],rType='xhs',curResult=null;
+
+function goPage(id,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  if(id==='history')renderHistory();
+}
+
+async function sGet(k){try{var r=await window.storage.get(k);return r?JSON.parse(r.value):null;}catch(e){return null;}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v));}catch(e){}}
+async function sDel(k){try{await window.storage.delete(k);}catch(e){}}
+
+document.querySelectorAll('.chip[data-v]').forEach(function(c){
+  c.addEventListener('click',function(){c.classList.toggle('on');saveSettings();});
+});
+document.querySelectorAll('.chip[data-type]').forEach(function(c){
+  c.addEventListener('click',function(){c.classList.toggle('on');});
+});
+function gVals(id){return Array.from(document.querySelectorAll('#'+id+' .chip.on')).map(function(c){return c.dataset.v;});}
+function gTypes(){return Array.from(document.querySelectorAll('.chip[data-type].on')).map(function(c){return c.dataset.type;});}
+
+async function loadSettings(){
+  var s=await sGet('persona_v2');if(!s)return;
+  function sc(id,arr){document.querySelectorAll('#'+id+' .chip').forEach(function(c){if((arr||[]).includes(c.dataset.v))c.classList.add('on');});}
+  sc('gPersona',s.persona);sc('gTone',s.tone);sc('gPref',s.pref);sc('gBan',s.ban);
+  ['personaCustom','toneCustom','prefCustom','banCustom','refText'].forEach(function(id){if(s[id])document.getElementById(id).value=s[id];});
+  if(s.rType){rType=s.rType;['rtXhs','rtMom','rtDetail','rtPoster'].forEach(function(id){document.getElementById(id).classList.remove('on');});var rmap={xhs:'rtXhs',moments:'rtMom',detail:'rtDetail',poster:'rtPoster'};if(rmap[rType])document.getElementById(rmap[rType]).classList.add('on');}
+  if(s.rUrls){rUrls=s.rUrls;renderUrls();}
+}
+async function saveSettings(){
+  await sSet('persona_v2',{
+    persona:gVals('gPersona'),tone:gVals('gTone'),pref:gVals('gPref'),ban:gVals('gBan'),
+    personaCustom:document.getElementById('personaCustom').value,
+    toneCustom:document.getElementById('toneCustom').value,
+    prefCustom:document.getElementById('prefCustom').value,
+    banCustom:document.getElementById('banCustom').value,
+    refText:document.getElementById('refText').value,
+    rType:rType,rUrls:rUrls
+  });
+}
+
+function setRefType(t){rType=t;['rtXhs','rtMom','rtDetail','rtPoster'].forEach(function(id){document.getElementById(id).classList.remove('on');});var map={xhs:'rtXhs',moments:'rtMom',detail:'rtDetail',poster:'rtPoster'};if(map[t])document.getElementById(map[t]).classList.add('on');saveSettings();}
+
+function hProdFiles(e){Array.from(e.target.files).forEach(function(f){readF(f,'pfList',pFiles);});e.target.value='';}
+function hRefFiles(e){Array.from(e.target.files).forEach(function(f){readF(f,'rfList',rFiles);});e.target.value='';}
+function readF(file,lid,arr){
+  var r=new FileReader();
+  r.onload=function(ev){arr.push({name:file.name,b64:ev.target.result.split(',')[1],mt:file.type||'application/octet-stream'});renderFL(lid,arr);};
+  r.readAsDataURL(file);
+}
+function renderFL(lid,arr){
+  document.getElementById(lid).innerHTML=arr.map(function(f,i){return '<div class="ftag"><span>📄 '+escH(f.name)+'</span><span class="rm" onclick="rmF('+i+',\''+lid+'\')">✕</span></div>';}).join('');
+}
+function rmF(i,lid){if(lid==='pfList'){pFiles.splice(i,1);renderFL(lid,pFiles);}else{rFiles.splice(i,1);renderFL(lid,rFiles);}}
+
+function addRefUrl(){var inp=document.getElementById('refUrl'),u=inp.value.trim();if(!u)return;rUrls.push(u);inp.value='';renderUrls();saveSettings();}
+function renderUrls(){document.getElementById('refUrlTags').innerHTML=rUrls.map(function(u,i){return '<div class="utag"><span>🔗 '+escH(u)+'</span><span class="rm" onclick="rmUrl('+i+')">✕</span></div>';}).join('');}
+function rmUrl(i){rUrls.splice(i,1);renderUrls();saveSettings();}
+
+function buildProd(){
+  var name=document.getElementById('pName').value.trim(),desc=document.getElementById('pDesc').value.trim(),parts=[];
+  if(name)parts.push({type:'text',text:'产品名称：'+name});
+  if(desc)parts.push({type:'text',text:'产品信息：\n'+desc});
+  pFiles.forEach(function(f){
+    if(f.mt.startsWith('image/'))parts.push({type:'image',source:{type:'base64',media_type:f.mt,data:f.b64}});
+    else parts.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:f.b64}});
+  });
+  if(parts.length===0)return'请分析产品材料';
+  if(parts.length===1&&parts[0].type==='text')return parts[0].text;
+  return parts;
+}
+
+async function analyzeProduct(){
+  var name=document.getElementById('pName').value.trim(),desc=document.getElementById('pDesc').value.trim();
+  if(!name&&!desc&&pFiles.length===0){showErr('aErr','请填写产品信息或上传文件');return;}
+  hideErr('aErr');
+  document.getElementById('aLdr').classList.add('show');
+  document.getElementById('aBox').classList.remove('show');
+  try{
+    var txt=await callClaude('你是专业消费品营销顾问。根据产品信息输出：\n\n【产品介绍】（2-3句精炼描述）\n【核心卖点】（5-6条，每条一句话）\n【目标用户画像】（年龄、性别、消费能力、生活状态）\n【用户核心痛点】（3-4条）\n\n直接按模块输出，无需开场白。',buildProd());
+    document.getElementById('aBox').textContent=txt;
+    document.getElementById('aBox').classList.add('show');
+  }catch(e){showErr('aErr','分析失败：'+e.message);}
+  finally{document.getElementById('aLdr').classList.remove('show');}
+}
+function clearProduct(){
+  document.getElementById('pName').value='';document.getElementById('pDesc').value='';
+  pFiles=[];renderFL('pfList',pFiles);
+  document.getElementById('aBox').classList.remove('show');hideErr('aErr');
+}
+
+async function generateContent(){
+  var name=document.getElementById('pName').value.trim(),desc=document.getElementById('pDesc').value.trim(),analysis=document.getElementById('aBox').textContent.trim();
+  if(!name&&!desc&&!analysis){showErr('genErr','请先填写产品信息或完成AI分析');return;}
+  var types=gTypes();
+  if(types.length===0){showErr('genErr','请至少选择一种内容类型');return;}
+  hideErr('genErr');
+  await saveSettings();
+  var persona=[].concat(gVals('gPersona'),[document.getElementById('personaCustom').value]).filter(Boolean).join('、')||'未设定';
+  var tone=[].concat(gVals('gTone'),[document.getElementById('toneCustom').value]).filter(Boolean).join('、')||'未设定';
+  var pref=[].concat(gVals('gPref'),[document.getElementById('prefCustom').value]).filter(Boolean).join('、')||'无';
+  var ban=[].concat(gVals('gBan'),[document.getElementById('banCustom').value]).filter(Boolean).join('、')||'无';
+  var refTxt=document.getElementById('refText').value.trim();
+  var ctx=[name?'产品名称：'+name:'',desc?'产品信息：\n'+desc:'',analysis?'AI分析：\n'+analysis:''].filter(Boolean).join('\n');
+  var highRated=await getHighRated(types);
+  document.getElementById('outputArea').style.display='block';
+  document.getElementById('gLdr').classList.add('show');
+  document.getElementById('outputContent').style.display='none';
+  document.getElementById('outputArea').scrollIntoView({behavior:'smooth'});
+  var steps=['分析产品定位中…','撰写内容草稿中…','按风格润色中…','最终优化中…'],si=0;
+  var st=setInterval(function(){si=(si+1)%steps.length;document.getElementById('gLdrTxt').textContent=steps[si];},2000);
+  var outputs={};
+  try{
+    for(var i=0;i<types.length;i++){
+      var t=types[i];
+      outputs[t]=await callClaude('直接输出创作内容，不要有开场白或总结说明。',buildPrompt(t,ctx,persona,tone,pref,ban,refTxt,highRated[t]));
+    }
+    clearInterval(st);
+    document.getElementById('gLdr').classList.remove('show');
+    curResult={productName:name||'未命名产品',types:types,outputs:outputs,date:new Date().toLocaleString('zh-CN')};
+    renderOutput(types,outputs);
+  }catch(e){
+    clearInterval(st);document.getElementById('gLdr').classList.remove('show');showErr('genErr','生成失败：'+e.message);
+  }
+}
+
+function buildPrompt(type,ctx,persona,tone,pref,ban,refTxt,highEx){
+  var style='人设定位：'+persona+'\n语言风格：'+tone+'\n偏好设置：'+pref+'\n禁止事项：'+ban;
+  var rtLabel={xhs:'小红书',moments:'朋友圈',detail:'产品详情页',poster:'促销海报'}[rType]||'参考';
+  if(refTxt)style+='\n\n参考'+rtLabel+'作品（模仿其句式、情绪、节奏，不要复制内容）：\n'+refTxt;
+  if(highEx)style+='\n\n历史高分内容（用户喜欢此类风格，请参考）：\n'+highEx;
+  var map={
+    xhs:'请根据产品信息和风格要求，创作2篇小红书获客笔记。\n\n产品信息：\n'+ctx+'\n\n风格要求：\n'+style+'\n\n要求：\n- 标题：含emoji，吸引眼球，含关键词，25字内\n- 正文：500-800字，口语化，真实感强\n- 结构：痛点/场景开头→发现产品→亲测效果→使用建议→互动引导\n- 结尾：引导评论/收藏/关注\n- 标签：6-8个话题标签\n- 两篇角度不同\n\n两篇用"=== 第一篇 ==="和"=== 第二篇 ==="分隔。',
+    moments:'请创作5条朋友圈文案。\n\n产品信息：\n'+ctx+'\n\n风格要求：\n'+style+'\n\n要求：\n- 每条100-200字\n- 5种风格：① 真实分享型 ② 好物推荐型 ③ 场景故事型 ④ 数据说服型 ⑤ 限时促销型\n- 自然真实，不像广告，每条带3-5个emoji\n- 每条开头标注"① 真实分享型："等标签',
+    qa:'请整理客户常见问题解答手册。\n\n产品信息：\n'+ctx+'\n\n风格要求：\n'+style+'\n\n要求：\n- 10-15个常见问题\n- 分类：产品功效/使用方法/适用人群/成分安全/购买售后\n- 回答专业、有温度、打消顾虑\n\n格式：\n【分类名】\nQ：问题\nA：回答',
+    detail:'请根据产品信息，撰写一份完整的电商产品详情页文案。\n\n产品信息：\n'+ctx+'\n\n风格要求：\n'+style+'\n\n要求：\n- 首屏卖点：1句核心slogan + 3个关键利益点（极短，视觉冲击强）\n- 产品介绍：2-3句，清晰说明产品是什么、为谁解决什么问题\n- 核心卖点展开：3-5个卖点，每个含小标题 + 2-3句说明\n- 适用人群：描述目标用户画像及使用场景\n- 使用方法：步骤清晰，简洁易懂\n- 用户评价（虚构但真实感强）：3条，不同角度\n- 品牌/品质背书：信任感建立\n\n每个模块用【模块名】标注，语言简洁有力，适合电商平台。',
+    poster:'请根据产品信息，撰写3套促销海报文案方案。\n\n产品信息：\n'+ctx+'\n\n风格要求：\n'+style+'\n\n每套方案包含：\n- 主标题：5-12字，冲击力强，吸引眼球\n- 副标题：10-20字，补充说明卖点或促销信息\n- 核心卖点标签：3-4个短词组（3-6字，适合做标签贴）\n- 行动号召CTA：1句，引导下单/扫码/领券等\n- 适用场景说明：这套文案适合哪种视觉风格/节日/促销场景\n\n3套方案分别面向：① 品牌形象款 ② 促销折扣款 ③ 节日礼品款\n用"=== 方案一 ==="等分隔。'
+  };
+  return map[type]||'';
+}
+
+async function getHighRated(types){
+  var result={};
+  try{
+    var lr=await window.storage.list('history:');
+    if(!lr||!lr.keys)return result;
+    var items=[];
+    for(var i=0;i<lr.keys.length;i++){var r=await sGet(lr.keys[i]);if(r)items.push(r);}
+    for(var j=0;j<types.length;j++){
+      var t=types[j];
+      var high=items.filter(function(it){return it.ratings&&(it.ratings[t]||0)>=4&&it.outputs&&it.outputs[t];});
+      if(high.length>0){high.sort(function(a,b){return(b.ratings[t]||0)-(a.ratings[t]||0);});result[t]=high[0].outputs[t].substring(0,400);}
+    }
+  }catch(e){}
+  return result;
+}
+
+async function callClaude(sys,msg){
+  var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:msg}]})
+  });
+  var data=await resp.json();
+  if(data.error)throw new Error(data.error.message);
+  return data.content.map(function(b){return b.text||'';}).join('\n');
+}
+
+var TL={xhs:'📕 小红书',moments:'💬 朋友圈',qa:'❓ 客户QA',detail:'🛒 产品详情页',poster:'🎨 促销海报'};
+function renderOutput(types,outputs){
+  var te=document.getElementById('oTabs'),pe=document.getElementById('oPanels');
+  te.innerHTML='';pe.innerHTML='';
+  types.forEach(function(type,i){
+    var tab=document.createElement('div');
+    tab.className='tab'+(i===0?' active':'');tab.textContent=TL[type]||type;tab.dataset.type=type;
+    tab.onclick=function(){switchTab(type);};te.appendChild(tab);
+    var panel=document.createElement('div');
+    panel.className='panel'+(i===0?' active':'');panel.id='op_'+type;
+    var cards=splitCards(type,outputs[type]||'');
+    cards.forEach(function(c,ci){
+      panel.innerHTML+='<div class="oc"><div class="oh"><span class="ot">'+TL[type]+(cards.length>1?' ('+(ci+1)+'/'+cards.length+')':'')+'</span><button class="cpb" onclick="cpText(this,`'+esc(c)+'`)">复制</button></div><div class="ob">'+escH(c)+'</div></div>';
+    });
+    pe.appendChild(panel);
+  });
+  document.getElementById('outputContent').style.display='block';
+}
+function switchTab(type){
+  document.querySelectorAll('.tab[data-type]').forEach(function(t){t.classList.toggle('active',t.dataset.type===type);});
+  document.querySelectorAll('[id^="op_"]').forEach(function(p){p.classList.toggle('active',p.id==='op_'+type);});
+}
+function splitCards(type,content){
+  if(type==='xhs'){var p=content.split(/\n(?====\s*第[一二]篇)/);return p.length>1?p.map(function(x){return x.replace(/^===.*===\s*/,'').trim();}).filter(Boolean):[content];}
+  if(type==='moments'){var p2=content.split(/\n(?=[①②③④⑤])/);return p2.length>1?p2.map(function(x){return x.trim();}).filter(Boolean):[content];}
+  if(type==='poster'){var p3=content.split(/\n(?====\s*方案[一二三])/);return p3.length>1?p3.map(function(x){return x.replace(/^===.*===\s*/,'').trim();}).filter(Boolean):[content];}
+  return[content];
+}
+
+async function saveToHistory(){
+  if(!curResult)return;
+  await sSet('history:'+Date.now(),Object.assign({},curResult,{ratings:{}}));
+  alert('✅ 已保存到历史记录！');
+}
+
+async function renderHistory(){
+  var el=document.getElementById('historyList');
+  el.innerHTML='<div class="loader show"><div class="spinner"></div></div>';
+  try{
+    var res=await window.storage.list('history:');
+    if(!res||!res.keys||res.keys.length===0){el.innerHTML='<div class="empty"><div class="ico">📭</div><p>还没有历史记录<br>生成内容后点击「保存」即可</p></div>';return;}
+    var items=[];
+    for(var i=0;i<res.keys.length;i++){var r=await sGet(res.keys[i]);if(r)items.push(Object.assign({},r,{sk:res.keys[i]}));}
+    items.sort(function(a,b){return b.sk.localeCompare(a.sk);});
+    el.innerHTML='';
+    items.forEach(function(item){
+      var card=document.createElement('div');card.className='hc';
+      var tags=(item.types||[]).map(function(t){return'<div class="htag">'+(TL[t]||t)+'</div>';}).join('');
+      var prev=item.outputs?Object.values(item.outputs)[0]||'':'';
+      var rrows=(item.types||[]).map(function(t){
+        return '<div class="rrow"><span class="rlbl">'+(TL[t]||t)+'</span><div class="stars" id="st_'+item.sk.replace(':','_')+'_'+t+'">'+[1,2,3,4,5].map(function(n){return'<span class="star'+((item.ratings&&item.ratings[t]||0)>=n?' lit':'')+'" onclick="rateStar(\''+item.sk+'\',\''+t+'\','+n+')">★</span>';}).join('')+'</div></div>';
+      }).join('');
+      card.innerHTML='<div class="htop"><div class="hname">'+escH(item.productName)+'</div><div class="hdate">'+(item.date||'')+'</div></div><div class="htags">'+tags+'</div><div class="hprev">'+escH(prev.substring(0,100))+'…</div><div style="margin-top:14px">'+rrows+'</div><div class="hbot"><button class="btn bs" style="padding:6px 14px;font-size:12px" onclick="openDetail(\''+item.sk+'\')">查看详情</button><span class="delbtn" onclick="delHistory(\''+item.sk+'\')">删除</span></div>';
+      el.appendChild(card);
+    });
+  }catch(e){el.innerHTML='<div class="empty"><p>加载失败：'+e.message+'</p></div>';}
+}
+
+async function rateStar(key,type,val){
+  var item=await sGet(key);if(!item)return;
+  if(!item.ratings)item.ratings={};
+  item.ratings[type]=val;await sSet(key,item);
+  var sid='st_'+key.replace(':','_')+'_'+type;
+  var el=document.getElementById(sid);
+  if(el)el.querySelectorAll('.star').forEach(function(s,i){s.classList.toggle('lit',i<val);});
+}
+
+async function openDetail(key){
+  var item=await sGet(key);if(!item)return;
+  document.getElementById('modalTitle').textContent=item.productName;
+  var body=document.getElementById('modalBody');body.innerHTML='';
+  if(item.outputs){
+    Object.entries(item.outputs).forEach(function(entry){
+      body.innerHTML+='<div style="margin-bottom:20px"><div style="font-weight:600;font-size:14px;margin-bottom:8px">'+(TL[entry[0]]||entry[0])+'</div><div style="font-size:13px;line-height:1.9;white-space:pre-wrap;background:var(--warm);padding:16px;border-radius:8px;border:1px solid var(--border)">'+escH(entry[1])+'</div></div>';
+    });
+  }
+  document.getElementById('detailModal').classList.add('show');
+}
+function closeModal(){document.getElementById('detailModal').classList.remove('show');}
+async function delHistory(key){if(!confirm('确定删除？'))return;await sDel(key);renderHistory();}
+
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s).replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');}
+async function cpText(btn,text){
+  try{await navigator.clipboard.writeText(text);btn.textContent='已复制 ✓';btn.classList.add('ok');setTimeout(function(){btn.textContent='复制';btn.classList.remove('ok');},2000);}
+  catch(e){btn.textContent='请手动复制';}
+}
+function showErr(id,msg){var el=document.getElementById(id);el.textContent=msg;el.classList.add('show');}
+function hideErr(id){document.getElementById(id).classList.remove('show');}
+
+loadSettings();
+</script>
+</body>
+</html>
